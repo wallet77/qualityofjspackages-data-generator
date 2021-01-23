@@ -1,0 +1,49 @@
+{
+  "name": "stateofjsdep-api",
+  "version": "1.0.0",
+  "description": "Provide data to stateofjsdep UI",
+  "main": "index.js",
+  "bin": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    "require": "./index.js",
+    "import": "./index.js"
+  },
+  "files": [
+    "src/**"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "linter": "./node_modules/.bin/eslint ./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "gh-wallet77:wallet77/stateofjsdep-api.git"
+  },
+  "keywords": [
+    "state",
+    "dependencies",
+    "api",
+    "report"
+  ],
+  "author": {
+    "name": "Vincent Vallet",
+    "email": "wallet77@gmail.com",
+    "url": "https://github.com/wallet77"
+  },
+  "devDependencies": {
+    "eslint": "^7.17.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "fastify": "3.10.1",
+    "fastify-mongodb": "2.0.1",
+    "pino": "6.11.0"
+  }
+}
