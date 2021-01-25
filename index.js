@@ -1,4 +1,7 @@
+const cors = require('fastify-cors')
 const fastify = require('fastify')()
+fastify.register(cors)
+const PORT = process.env.PORT || 3000
 const logger = require('pino')()
 
 fastify.register(require('fastify-mongodb'), {
@@ -40,7 +43,6 @@ fastify.get('/report', (request, reply) => {
             }
         }
 
-        console.log(quality, npmsFinal, npmsQuality)
         reply.send({
             data: {
                 quality: avg(quality),
@@ -53,7 +55,7 @@ fastify.get('/report', (request, reply) => {
     })
 })
 
-fastify.listen(3000, (err, address) => {
+fastify.listen(PORT, (err, address) => {
     if (err) throw err
     logger.info(`Server listening on ${address}`)
 })
