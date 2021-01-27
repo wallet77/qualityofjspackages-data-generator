@@ -22,24 +22,39 @@ fastify.get('/report', (request, reply) => {
         const quality = []
         const npmsFinal = []
         const npmsQuality = []
+        const avgs = {}
 
         for (const packageName in result[0]) {
             if (packageName === '_id') continue
             const currentPackage = result[0][packageName]
             try {
                 currentPackage.qualscan = JSON.parse(currentPackage.qualscan)
-                // delete result[0][packageName].qualscan.data.cmds
 
-                // for (let i = 0; i < result[0][packageName].qualscan.data.cmds.length; i++) {
-                //     const currentCmd = result[0][packageName].qualscan.data.cmds[i]
-                //     delete currentCmd.data
-                // }
-                // console.log(result[0][packageName])
+                for (let i = 0; i < result[0][packageName].qualscan.data.cmds.length; i++) {
+                    const currentCmd = result[0][packageName].qualscan.data.cmds[i]
+                    if(!currentCmd.budget) continue
+                    for(const metric in currentCmd.budget.fail) {
+                        if(!avgs[currentCmd.title]) avgs[currentCmd.title] = {}
+                        if(!avgs[currentCmd.title][metric]) avgs[currentCmd.title][metric] = []
+                        avgs[currentCmd.title][metric].push(currentCmd.budget.fail[metric].value)
+                        avgs[currentCmd.title][metric].push(currentCmd.budget.fail[metric].value)
+                        
+                    }
+                }
+
                 quality.push(currentPackage.qualscan.data.score)
                 npmsFinal.push(currentPackage.npms.final)
                 npmsQuality.push(currentPackage.npms.quality)
             } catch (err) {
                 delete result[0][packageName].qualscan
+            }
+        }
+
+        //console.log(avgs)
+        for(const cmdName in avgs) {
+            const currentCmd = avgs[cmdName]
+            for(const metric in currentCmd) {
+                currentCmd[metric] = avg(currentCmd[metric])
             }
         }
 
@@ -49,7 +64,8 @@ fastify.get('/report', (request, reply) => {
                 npms: {
                     final: avg(npmsFinal),
                     quality: avg(npmsQuality)
-                }
+                },
+                avgs
             }
         })
     })
