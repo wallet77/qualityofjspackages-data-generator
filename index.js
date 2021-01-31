@@ -44,6 +44,7 @@ fastify.get('/report', (request, reply) => {
             }
         }
         const packages = result[0].packages
+        let duration = 0
 
         for (const packageName in packages) {
             if (packageName === '_id') continue
@@ -63,6 +64,7 @@ fastify.get('/report', (request, reply) => {
                     }
                 }
 
+                duration += currentPackage.qualscan.time
                 metrics.general.qualscan.push(currentPackage.qualscan.data.score)
                 metrics.general.npmsFinal.push(currentPackage.npms.final)
                 metrics.general.npmsQuality.push(currentPackage.npms.detail.quality)
@@ -95,6 +97,7 @@ fastify.get('/report', (request, reply) => {
         reply.send({
             data: {
                 time: result[0].time,
+                duration,
                 metrics
             }
         })
