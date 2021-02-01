@@ -25,7 +25,7 @@ const minMaxMean = (arr) => {
         }
         sum = sum + arr[i]
     }
-    return {max, min, avg: sum/arr.length}
+    return {max, min, avg: sum/arr.length, total: arr.length}
 }
 
 fastify.get('/report', (request, reply) => {
