@@ -59,7 +59,6 @@ fastify.get('/report', (request, reply) => {
                         if(!metrics[currentCmd.title]) metrics[currentCmd.title] = {}
                         if(!metrics[currentCmd.title][metric]) metrics[currentCmd.title][metric] = []
                         metrics[currentCmd.title][metric].push(currentCmd.budget.fail[metric].value)
-                        metrics[currentCmd.title][metric].push(currentCmd.budget.fail[metric].value)
                         
                     }
                 }
