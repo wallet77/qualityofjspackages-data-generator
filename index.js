@@ -79,16 +79,19 @@ fastify.get('/report', (request, reply) => {
             const currentCmd = metrics[cmdName]
             for(const metric in currentCmd) {
                 const result = percentile(
-                    [90, 95, 99],
+                    [25, 50, 75, 90, 95, 99],
                     currentCmd[metric]
                 )
                 const minMaxAvg = minMaxMean(currentCmd[metric])
                 currentCmd[metric] = {
                     ...minMaxAvg,
                     percentiles: {
-                        90: result[0],
-                        95: result[1],
-                        99: result[2]
+                        25: result[0],
+                        50: result[1],
+                        75: result[2],
+                        90: result[3],
+                        95: result[4],
+                        99: result[5]
                     }
                 }
             }
