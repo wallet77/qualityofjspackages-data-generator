@@ -4,13 +4,7 @@ fastify.register(cors)
 const PORT = process.env.PORT || 3000
 const logger = require('pino')()
 const percentile = require("percentile")
-
-fastify.register(require('fastify-mongodb'), {
-    // force to close the mongodb connection when app stopped
-    // the default value is false
-    forceClose: true,
-    url: 'mongodb://localhost:27017'
-})
+const fs = require('fs')
 
 const minMaxMean = (arr) => {
     let max = arr[0]
@@ -28,11 +22,9 @@ const minMaxMean = (arr) => {
     return {max, min, avg: sum/arr.length, total: arr.length}
 }
 
-fastify.get('/report', (request, reply) => {
-    const db = fastify.mongo.client.db('npm-packages-quality-analysis')
-
-    db.collection('reports').find({}).sort({ _id: -1 }).toArray((err, result) => {
-        if (err) return reply.send({ data: null })
+fastify.get('/report', async (request, reply) => {
+    const rawdata = await fs.promises.readFile('./report/report.json')
+    const data = JSON.parse(rawdata)
 
         const metrics = {
             general: {
@@ -43,7 +35,7 @@ fastify.get('/report', (request, reply) => {
                 qualscan: []
             }
         }
-        const packages = result[0].packages
+        const packages = data.packages
         let duration = 0
 
         for (const packageName in packages) {
@@ -98,12 +90,12 @@ fastify.get('/report', (request, reply) => {
 
         reply.send({
             data: {
-                time: result[0].time,
+                time: data.time,
                 duration,
                 metrics
             }
         })
-    })
+    //})
 })
 
 fastify.listen(PORT, (err, address) => {
