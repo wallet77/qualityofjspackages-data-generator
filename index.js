@@ -3,7 +3,7 @@ const fastify = require('fastify')()
 fastify.register(cors)
 const PORT = process.env.PORT || 3000
 const logger = require('pino')()
-const percentile = require("percentile")
+const percentile = require('percentile')
 const fs = require('fs')
 
 const minMaxMean = (arr) => {
@@ -19,7 +19,7 @@ const minMaxMean = (arr) => {
         }
         sum = sum + arr[i]
     }
-    return {max, min, avg: sum/arr.length, total: arr.length}
+    return { max, min, avg: sum / arr.length, total: arr.length }
 }
 
 fastify.get('/report', async (request, reply) => {
@@ -48,15 +48,15 @@ fastify.get('/report', async (request, reply) => {
 
             for (let i = 0; i < packages[packageName].qualscan.data.cmds.length; i++) {
                 const currentCmd = packages[packageName].qualscan.data.cmds[i]
-                if(!currentCmd.budget) continue
-                for(const metric in currentCmd.budget.fail) {
-                    if(!metrics[currentCmd.title]) metrics[currentCmd.title] = {}
-                    if(!metrics[currentCmd.title][metric]) metrics[currentCmd.title][metric] = []
+                if (!currentCmd.budget) continue
+                for (const metric in currentCmd.budget.fail) {
+                    if (!metrics[currentCmd.title]) metrics[currentCmd.title] = {}
+                    if (!metrics[currentCmd.title][metric]) metrics[currentCmd.title][metric] = []
                     metrics[currentCmd.title][metric].push(currentCmd.budget.fail[metric].value)
                 }
 
-                if(!qualscanMetrics[currentCmd.title]) qualscanMetrics[currentCmd.title] = {}
-                if(!qualscanMetrics[currentCmd.title][currentCmd.level]) qualscanMetrics[currentCmd.title][currentCmd.level] = 0
+                if (!qualscanMetrics[currentCmd.title]) qualscanMetrics[currentCmd.title] = {}
+                if (!qualscanMetrics[currentCmd.title][currentCmd.level]) qualscanMetrics[currentCmd.title][currentCmd.level] = 0
                 qualscanMetrics[currentCmd.title][currentCmd.level]++
             }
 
@@ -71,9 +71,9 @@ fastify.get('/report', async (request, reply) => {
         }
     }
 
-    for(const cmdName in metrics) {
+    for (const cmdName in metrics) {
         const currentCmd = metrics[cmdName]
-        for(const metric in currentCmd) {
+        for (const metric in currentCmd) {
             const result = percentile(
                 [25, 50, 75, 90, 95, 99],
                 currentCmd[metric]
