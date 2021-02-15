@@ -1,7 +1,3 @@
-const cors = require('fastify-cors')
-const fastify = require('fastify')()
-fastify.register(cors)
-const PORT = process.env.PORT || 3000
 const logger = require('pino')()
 const percentile = require('percentile')
 const fs = require('fs')
@@ -22,8 +18,8 @@ const minMaxMean = (arr) => {
     return { max, min, avg: sum / arr.length, total: arr.length }
 }
 
-fastify.get('/report', async (request, reply) => {
-    const rawdata = await fs.promises.readFile('./report/report.json')
+const generateJSON = async (request, reply) => {
+    const rawdata = await fs.promises.readFile(process.env.INPUT)
     const data = JSON.parse(rawdata)
 
     const metrics = {
@@ -62,10 +58,10 @@ fastify.get('/report', async (request, reply) => {
 
             duration += currentPackage.qualscan.time
             metrics.general.qualscan.push(currentPackage.qualscan.data.score)
-            metrics.general.npmsFinal.push(currentPackage.npms.final)
-            metrics.general.npmsQuality.push(currentPackage.npms.detail.quality)
-            metrics.general.npmsMaintenance.push(currentPackage.npms.detail.maintenance)
-            metrics.general.npmsPopularity.push(currentPackage.npms.detail.popularity)
+            metrics.general.npmsFinal.push(currentPackage.npms.score.final)
+            metrics.general.npmsQuality.push(currentPackage.npms.score.detail.quality)
+            metrics.general.npmsMaintenance.push(currentPackage.npms.score.detail.maintenance)
+            metrics.general.npmsPopularity.push(currentPackage.npms.score.detail.popularity)
         } catch (err) {
             delete packages[packageName].qualscan
         }
@@ -95,16 +91,18 @@ fastify.get('/report', async (request, reply) => {
 
     metrics.qualscanMetrics = qualscanMetrics
 
-    reply.send({
-        data: {
-            time: data.time,
-            duration,
-            metrics
-        }
-    })
-})
+    const payload = {
+        time: data.time,
+        duration,
+        metrics
+    }
 
-fastify.listen(PORT, (err, address) => {
-    if (err) throw err
-    logger.info(`Server listening on ${address}`)
-})
+    try {
+        await fs.promises.writeFile(process.env.OUTPUT, JSON.stringify(payload), 'utf8')
+        logger.info('Data generated!')
+    } catch (err) {
+        logger.error(err)
+    }
+}
+
+generateJSON()
