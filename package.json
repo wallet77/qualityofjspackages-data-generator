@@ -42,9 +42,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "fastify": "3.10.1",
-    "fastify-cors": "5.1.0",
-    "fastify-mongodb": "2.0.1",
     "percentile": "1.4.0",
     "pino": "6.11.0"
   }
