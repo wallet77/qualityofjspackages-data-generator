@@ -34,7 +34,6 @@ const generateJSON = async (request, reply) => {
     const qualscanMetrics = {}
 
     const packages = data.packages
-    let duration = 0
 
     for (const packageName in packages) {
         if (packageName === '_id') continue
@@ -56,7 +55,6 @@ const generateJSON = async (request, reply) => {
                 qualscanMetrics[currentCmd.title][currentCmd.level]++
             }
 
-            duration += currentPackage.qualscan.time
             metrics.general.qualscan.push(currentPackage.qualscan.data.score)
             metrics.general.npmsFinal.push(currentPackage.npms.score.final)
             metrics.general.npmsQuality.push(currentPackage.npms.score.detail.quality)
@@ -93,7 +91,7 @@ const generateJSON = async (request, reply) => {
 
     const payload = {
         time: data.time,
-        duration,
+        duration: data.duration,
         metrics
     }
 
