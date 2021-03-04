@@ -1,4 +1,4 @@
-# State Of Js Packages - report generator
+# Quality of JS packages - report generator
 
 ## Project setup
 ```
