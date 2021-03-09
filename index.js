@@ -4,9 +4,10 @@ const fs = require('fs')
 
 const minMaxMean = (arr) => {
     let max = arr[0]
-    let min = arr[0]
-    let sum = arr[0]
+    let min = typeof arr[0] !== 'number' ? 0 : arr[0]
+    let sum = typeof arr[0] !== 'number' ? 0 : arr[0]
     for (let i = 1; i < arr.length; i++) {
+        if (typeof arr[i] !== 'number') continue
         if (arr[i] > max) {
             max = arr[i]
         }
@@ -29,6 +30,10 @@ const generateJSON = async (request, reply) => {
             npmsMaintenance: [],
             npmsPopularity: [],
             qualscan: []
+        },
+        consumption: {
+            npm: [],
+            host: []
         }
     }
     const qualscanMetrics = {}
@@ -60,6 +65,8 @@ const generateJSON = async (request, reply) => {
             metrics.general.npmsQuality.push(currentPackage.npms.score.detail.quality)
             metrics.general.npmsMaintenance.push(currentPackage.npms.score.detail.maintenance)
             metrics.general.npmsPopularity.push(currentPackage.npms.score.detail.popularity)
+            metrics.consumption.npm.push(currentPackage.consumption.npm)
+            metrics.consumption.host.push(currentPackage.consumption.host)
         } catch (err) {
             delete packages[packageName].qualscan
         }
