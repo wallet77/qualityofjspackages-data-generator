@@ -65,8 +65,11 @@ const generateJSON = async (request, reply) => {
             metrics.general.npmsQuality.push(currentPackage.npms.score.detail.quality)
             metrics.general.npmsMaintenance.push(currentPackage.npms.score.detail.maintenance)
             metrics.general.npmsPopularity.push(currentPackage.npms.score.detail.popularity)
-            metrics.consumption.npm.push(currentPackage.consumption.npm)
-            metrics.consumption.host.push(currentPackage.consumption.host)
+
+            if (currentPackage.consumption) {
+                metrics.consumption.npm.push(currentPackage.consumption.npm)
+                metrics.consumption.host.push(currentPackage.consumption.host)
+            }
         } catch (err) {
             delete packages[packageName].qualscan
         }
@@ -99,7 +102,8 @@ const generateJSON = async (request, reply) => {
     const payload = {
         time: data.time,
         duration: data.duration,
-        metrics
+        metrics,
+        machine: data.machine
     }
 
     try {
