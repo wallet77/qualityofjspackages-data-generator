@@ -103,7 +103,8 @@ const generateJSON = async (request, reply) => {
         time: data.time,
         duration: data.duration,
         metrics,
-        machine: data.machine
+        machine: data.machine,
+        skippedPackages: data.skippedPackages
     }
 
     try {
