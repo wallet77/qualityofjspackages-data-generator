@@ -39,9 +39,9 @@ const generateJSON = async (request, reply) => {
     const qualscanMetrics = {}
 
     const packages = data.packages
+    let nbPackages = 0
 
     for (const packageName in packages) {
-        if (packageName === '_id') continue
         const currentPackage = packages[packageName]
         try {
             currentPackage.qualscan = JSON.parse(currentPackage.qualscan)
@@ -70,6 +70,7 @@ const generateJSON = async (request, reply) => {
                 metrics.consumption.npm.push(currentPackage.consumption.npm)
                 metrics.consumption.host.push(currentPackage.consumption.host)
             }
+            nbPackages++
         } catch (err) {
             delete packages[packageName].qualscan
         }
@@ -104,7 +105,8 @@ const generateJSON = async (request, reply) => {
         duration: data.duration,
         metrics,
         machine: data.machine,
-        skippedPackages: data.skippedPackages
+        skippedPackages: data.skippedPackages,
+        nbPackages
     }
 
     try {
