@@ -6,6 +6,7 @@ const minMaxMean = (arr) => {
     let max = arr[0]
     let min = typeof arr[0] !== 'number' ? 0 : arr[0]
     let sum = typeof arr[0] !== 'number' ? 0 : arr[0]
+    let nbItems = 0
     for (let i = 1; i < arr.length; i++) {
         if (typeof arr[i] !== 'number') continue
         if (arr[i] > max) {
@@ -15,8 +16,9 @@ const minMaxMean = (arr) => {
             min = arr[i]
         }
         sum = sum + arr[i]
+        nbItems++
     }
-    return { max, min, avg: sum / arr.length, total: arr.length }
+    return { max, min, avg: sum / nbItems, total: nbItems }
 }
 
 const generateJSON = async (request, reply) => {
@@ -73,6 +75,16 @@ const generateJSON = async (request, reply) => {
             nbPackages++
         } catch (err) {
             delete packages[packageName].qualscan
+        }
+    }
+
+    // clean metrics
+    for (const cmdName in metrics) {
+        const currentCmd = metrics[cmdName]
+        for (const metric in currentCmd) {
+            currentCmd[metric] = currentCmd[metric].filter((value) => {
+                return typeof value === 'number'
+            })
         }
     }
 
