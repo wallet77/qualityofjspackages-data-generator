@@ -1,6 +1,7 @@
 const logger = require('pino')()
 const percentile = require('percentile')
 const fs = require('fs')
+const debug = require('debug')('data-generator')
 
 /**
  * Calculate min, max and mean of an array of values
@@ -27,6 +28,28 @@ const minMaxMean = (arr) => {
     return { max, min, avg: sum / nbItems, total: nbItems }
 }
 
+const getAdditionalInfo = (additionalInfo, currentCmd, metric, packageName) => {
+    if (!additionalInfo[currentCmd.title]) additionalInfo[currentCmd.title] = {}
+    if (!additionalInfo[currentCmd.title][metric]) {
+        additionalInfo[currentCmd.title][metric] = {
+            max: currentCmd.budget.fail[metric].value,
+            min: currentCmd.budget.fail[metric].value,
+            packagesMax: [packageName],
+            packagesMin: [packageName]
+        }
+    } else if (currentCmd.budget.fail[metric].value > additionalInfo[currentCmd.title][metric].max) {
+        additionalInfo[currentCmd.title][metric].max = currentCmd.budget.fail[metric].value
+        additionalInfo[currentCmd.title][metric].packagesMax = [packageName]
+    } else if (currentCmd.budget.fail[metric].value === additionalInfo[currentCmd.title][metric].max) {
+        additionalInfo[currentCmd.title][metric].packagesMin.push(packageName)
+    } else if (currentCmd.budget.fail[metric].value < additionalInfo[currentCmd.title][metric].min) {
+        additionalInfo[currentCmd.title][metric].min = currentCmd.budget.fail[metric].value
+        additionalInfo[currentCmd.title][metric].packagesMin = [packageName]
+    } else if (currentCmd.budget.fail[metric].value === additionalInfo[currentCmd.title][metric].min) {
+        additionalInfo[currentCmd.title][metric].packagesMin.push(packageName)
+    }
+}
+
 /**
  * Generate the json report
  */
@@ -50,6 +73,8 @@ const generateJSON = async () => {
     }
     const qualscanMetrics = {}
 
+    const additionalInfo = {}
+
     const packages = data.packages
     let nbPackages = 0
 
@@ -69,6 +94,8 @@ const generateJSON = async () => {
                     if (!metrics[currentCmd.title]) metrics[currentCmd.title] = {}
                     if (!metrics[currentCmd.title][metric]) metrics[currentCmd.title][metric] = []
                     metrics[currentCmd.title][metric].push(currentCmd.budget.fail[metric].value)
+
+                    getAdditionalInfo(additionalInfo, currentCmd, metric, packageName)
                 }
 
                 if (!qualscanMetrics[currentCmd.title]) qualscanMetrics[currentCmd.title] = {}
@@ -93,6 +120,8 @@ const generateJSON = async () => {
             delete packages[packageName].qualscan
         }
     }
+
+    debug(require('util').inspect(additionalInfo, { showHidden: false, depth: null }))
 
     // clean metrics
     for (const cmdName in metrics) {
