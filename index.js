@@ -2,6 +2,7 @@ const logger = require('pino')()
 const percentile = require('percentile')
 const fs = require('fs')
 const debug = require('debug')('data-generator')
+const path = require('path')
 
 /**
  * Calculate min, max and mean of an array of values
@@ -168,7 +169,7 @@ const generateJSON = async () => {
     }
 
     try {
-        await fs.promises.writeFile(process.env.OUTPUT, JSON.stringify(payload), 'utf8')
+        await fs.promises.writeFile(path.join(process.env.OUTPUT, `${new Date().toJSON().substr(0, 10)}.json`), JSON.stringify(payload), 'utf8')
         logger.info('Data generated!')
     } catch (err) {
         logger.error(err)
