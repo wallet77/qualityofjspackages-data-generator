@@ -169,7 +169,7 @@ const generateJSON = async () => {
     }
 
     try {
-        await fs.promises.writeFile(path.join(process.env.OUTPUT, `${new Date().toJSON().substr(0, 10)}.json`), JSON.stringify(payload), 'utf8')
+        await fs.promises.writeFile(path.join(process.env.OUTPUT, `${new Date(data.time).toJSON().substr(0, 10)}.json`), JSON.stringify(payload), 'utf8')
         logger.info('Data generated!')
     } catch (err) {
         logger.error(err)
