@@ -1,6 +1,6 @@
 {
   "name": "qualityofjspackages-data-generator",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Provide data to stateofjsdep UI",
   "main": "index.js",
   "bin": "./index.js",
@@ -34,16 +34,16 @@
     "url": "https://github.com/wallet77"
   },
   "devDependencies": {
-    "eslint": "^7.17.0",
+    "eslint": "^7.24.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1"
+    "eslint-plugin-promise": "^5.1.0"
   },
   "license": "MIT",
   "dependencies": {
     "debug": "^4.3.1",
     "percentile": "1.4.0",
-    "pino": "6.11.0"
+    "pino": "6.11.2"
   }
 }
